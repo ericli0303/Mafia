@@ -5,6 +5,10 @@ public interface IPlayer {
 
   PlayerType getPlayerType();
 
+  String getRole();
+
+
+
 
 
 }
