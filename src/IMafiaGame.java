@@ -1,13 +1,13 @@
+import java.util.HashMap;
 import java.util.List;
+
+import Players.IPlayer;
 
 /**
  * This is the interface of the Mafia Game. It is parameterized over the player type. This takes
  * care of the basic functions of what the Mafia game should perform.
- *
- * @param <IPlayer>> Player
  */
-public interface IMafiaGame<IPlayer> {
-
+public interface IMafiaGame {
 
   /**
    * Return a valid deck of cards for a game of Mafia. An invalid deck is defined as a deck that has
@@ -16,7 +16,14 @@ public interface IMafiaGame<IPlayer> {
    *
    * @return the deck of players as a list
    */
-  List<IPlayer> getDeck();
+  List<IPlayer> getDeck(int numPlayers);
+
+  /**
+   * Return a mapping of each player to the player they have voted to lynch.
+   *
+   * @return
+   */
+  HashMap<Integer, Integer> getLynchVotes();
 
   /**
    * Begins a new game of Mafia with the given deck of players. This method should first verify that
@@ -79,33 +86,31 @@ public interface IMafiaGame<IPlayer> {
    * @param player1 the player giving the action on the corresponding deck
    * @param player2 the player receiving the action on the corresponding deck
    */
-  void doAction(PlayerType pile1, int player1, PlayerType pile2, int player2);
+  void doAction(int player1, int player2);
 
   /**
    * Where one player nominates another player to be lynched.
    *
-   * @param pile1 the PileType of the player doing the nomination
    * @param player1 the index of the player doing the nomination
-   * @param pile2 the PileType of the player receiving the nomination
    * @param player2 the index of the player receiving the nomination
    */
-  void doNomination(PlayerType pile1, int player1, PlayerType pile2, int player2);
+  void doNomination(int player1, int player2);
 
   /**
-   * Gets the current game state. Should return a list of the Mafia, Town, and current phase of the game.
+   * Gets the current game state. Should return a list of the Mafia, Town, and current phase of the
+   * game.
    *
    * @return
    */
   String getGameState();
 
   /**
-   * Gets the Player from the corresponding PlayerType pile
+   * Gets the Player from the corresponding index
    *
-   * @param pile the pile the player is in
    * @param player the index the player is at
-   * @return the player at corresponding index of the pile.
+   * @return the player at corresponding index of the player list
    */
-  IPlayer getPlayer(PlayerType pile, int player);
+  IPlayer getPlayer(int player);
 
 
 }
