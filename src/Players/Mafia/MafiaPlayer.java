@@ -17,8 +17,23 @@ public class MafiaPlayer extends AMafia {
   }
 
   @Override
-  public void doAction(IPlayer p2) {
-
+  public void selectForAction(IPlayer p2) {
+    if(p2.getPlayerType() == PlayerType.MAFIA ) {
+      throw new IllegalArgumentException("Cannot attack Mafia");
+    } else {
+      otherPlayer = p2;
+    }
   }
 
+  @Override
+  public boolean hasAction() {
+    return true;
+  }
+
+  @Override
+  public void executeAction() {
+    if(!otherPlayer.isProtected()) {
+      otherPlayer.killPlayer();
+    }
+  }
 }

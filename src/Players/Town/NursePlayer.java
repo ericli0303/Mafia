@@ -16,8 +16,14 @@ public class NursePlayer extends ATown {
     return PlayerRole.NURSE;
   }
 
+
   @Override
-  public void doAction(IPlayer p2) {
-    p2.protectPlayer();
+  public boolean hasAction() {
+    return true;
+  }
+
+  @Override
+  public void executeAction() {
+    otherPlayer.protectPlayer();
   }
 }

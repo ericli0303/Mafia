@@ -2,8 +2,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Players.IPlayer;
+import Players.Mafia.AMafia;
 import Players.Mafia.MafiaPlayer;
 import Players.PlayerType;
 import Players.Town.DetectivePlayer;
@@ -17,6 +19,7 @@ public class MafiaGame implements IMafiaGame {
   private HashMap<Integer, Integer> lynchVotes;
   private List<IPlayer> players;
   private Phase currentPhase;
+  private int day;
 
   public MafiaGame() {
     lynchVotes = new HashMap<>();
@@ -43,10 +46,6 @@ public class MafiaGame implements IMafiaGame {
     return players;
   }
 
-  @Override
-  public HashMap<Integer, Integer> getLynchVotes() {
-    return null;
-  }
 
   @Override
   public void startGame(List<IPlayer> players, int numPlayers) {
@@ -63,9 +62,11 @@ public class MafiaGame implements IMafiaGame {
       throw new IllegalArgumentException("A valid deck cannot be guaranteed with your input retard");
     }
   }
+  //need to make sure list of players is more or equal to num of players.
 
   /**
-   * Return whether or not the given list of players is valid.
+   * Return whether or not the given list of players is valid. Is valid if there are more town than
+   * Mafia and there is at least one mafia.
    *
    * @param players the given list of players
    * @return true if town players outnumber the mafia, false otherwise
@@ -80,8 +81,9 @@ public class MafiaGame implements IMafiaGame {
         town++;
       }
     }
-    return town > mafia;
+    return (town > mafia) && (mafia > 0);
   }
+
 
   @Override
   public boolean isGameOver() {
@@ -99,6 +101,7 @@ public class MafiaGame implements IMafiaGame {
     if (currentPhase == Phase.DAYTIME) {
       currentPhase = Phase.NIGHTTIME;
     } else if (currentPhase == Phase.NIGHTTIME) {
+      day++;
       currentPhase = Phase.DAYTIME;
     } else if (currentPhase == Phase.LYNCHING) {
       currentPhase = Phase.NIGHTTIME;
@@ -149,12 +152,14 @@ public class MafiaGame implements IMafiaGame {
   public void doAction(int player1, int player2) {
     IPlayer p1 = getPlayer(player1);
     IPlayer p2 = getPlayer(player2);
-    p1.doAction(p2);
+    p1.selectForAction(p2);
   }
 
   @Override
   public void doNomination(int player1, int player2) {
-
+    IPlayer p1 = getPlayer(player1);
+    IPlayer p2 = getPlayer(player2);
+    p1.lynch(p2);
   }
 
   @Override
@@ -175,6 +180,7 @@ public class MafiaGame implements IMafiaGame {
                 (p.isAlive() ? "Alive" : "Dead") + "\n");
       }
     }
+    state.append("Current Day: " + day + "\n");
     state.append("Current Phase: " + currentPhase);
     return state.toString();
   }
@@ -183,4 +189,60 @@ public class MafiaGame implements IMafiaGame {
   public IPlayer getPlayer(int player) {
     return players.get(player);
   }
+
+  @Override
+  public IPlayer getMafiaKill(List<AMafia> mafias) {
+    HashMap<IPlayer, Integer> votes = new HashMap<>();
+    for (AMafia m : mafias) {
+      IPlayer otherPlayer = m.getOtherPlayer();
+      if (otherPlayer == null) {
+        continue;
+      }
+      if (votes.containsKey(otherPlayer)) {
+        votes.put(otherPlayer, votes.get(otherPlayer) + 1);
+      } else {
+        votes.put(otherPlayer, 1);
+      }
+    }
+    if(votes.isEmpty()) {
+      return null;
+    }
+    int maxValueInMap = (Collections.max(votes.values()));  // This will return max value in the Hashmap
+    for (Map.Entry<IPlayer, Integer> entry : votes.entrySet()) {  // Itrate through hashmap
+      if (entry.getValue() == maxValueInMap) {
+        return entry.getKey();     // Print the key with max value
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public IPlayer getLynchVote(List<IPlayer> players) {
+    HashMap<IPlayer, Integer> votes = new HashMap<>();
+    for (IPlayer m : players) {
+      IPlayer otherPlayer = m.getOtherPlayer();
+      if (otherPlayer == null) {
+        continue;
+      }
+      if (votes.containsKey(otherPlayer)) {
+        votes.put(otherPlayer, votes.get(otherPlayer) + 1);
+      } else {
+        votes.put(otherPlayer, 1);
+      }
+    }
+    if(votes.isEmpty()) {
+      return null;
+    }
+    int maxValueInMap = (Collections.max(votes.values()));  // This will return max value in the Hashmap
+    if (!(maxValueInMap > players.size() / 2)) {
+      return null;
+    }
+    for (Map.Entry<IPlayer, Integer> entry : votes.entrySet()) {  // Itrate through hashmap
+      if (entry.getValue() == maxValueInMap) {
+        return entry.getKey();     // Print the key with max value
+      }
+    }
+    return null;
+  }
+
 }

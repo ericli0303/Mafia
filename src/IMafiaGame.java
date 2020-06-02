@@ -2,6 +2,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import Players.IPlayer;
+import Players.Mafia.AMafia;
 
 /**
  * This is the interface of the Mafia Game. It is parameterized over the player type. This takes
@@ -18,12 +19,13 @@ public interface IMafiaGame {
    */
   List<IPlayer> getDeck(int numPlayers);
 
+  // Will probably delete this later.
   /**
    * Return a mapping of each player to the player they have voted to lynch.
    *
    * @return
    */
-  HashMap<Integer, Integer> getLynchVotes();
+  IPlayer getLynchVote(List<IPlayer> players);
 
   /**
    * Begins a new game of Mafia with the given deck of players. This method should first verify that
@@ -100,7 +102,7 @@ public interface IMafiaGame {
    * Gets the current game state. Should return a list of the Mafia, Town, and current phase of the
    * game.
    *
-   * @return
+   * @return a String that represents the game state
    */
   String getGameState();
 
@@ -111,6 +113,14 @@ public interface IMafiaGame {
    * @return the player at corresponding index of the player list
    */
   IPlayer getPlayer(int player);
+
+  /**
+   * Gets the Mafia kill. Will select the majority vote, but if there is no majority, selects a vote
+   * at random.
+   *
+   * @return the Player to kill
+   */
+  IPlayer getMafiaKill(List<AMafia> mafias);
 
 
 }

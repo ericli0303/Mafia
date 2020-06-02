@@ -17,13 +17,21 @@ public class DetectivePlayer extends ATown {
     return PlayerRole.DETECTIVE;
   }
 
-  @Override
-  public void doAction(IPlayer p2) {
-    investigation = p2.getPlayerType();
+  /**
+   * Gets the PlayerType of the Person investigated
+   * @return the PlayerType in the form of a String
+   */
+  public String seeInvestigated() {
+    return investigation.toString();
   }
 
   @Override
-  public String seeInvestigated() {
-    return investigation.toString();
+  public boolean hasAction() {
+    return true;
+  }
+
+  @Override
+  public void executeAction() {
+    investigation = otherPlayer.getPlayerType();
   }
 }

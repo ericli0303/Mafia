@@ -1,6 +1,7 @@
 package Players.Mafia;
 
 import Players.APlayer;
+import Players.IPlayer;
 import Players.PlayerType;
 
 public abstract class AMafia extends APlayer {
@@ -12,4 +13,5 @@ public abstract class AMafia extends APlayer {
   public PlayerType getPlayerType() {
     return PlayerType.MAFIA;
   }
+
 }
